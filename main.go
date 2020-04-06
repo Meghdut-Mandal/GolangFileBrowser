@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -14,14 +15,20 @@ func main() {
 	var dir string
 
 	prt := os.Getenv("PRT")
-	fmt.Println("running port ", prt)
+	if _, err := strconv.Atoi(prt); err == nil {
+		fmt.Printf("%q is the Port Set in Env Variables ", prt)
+	} else {
+		fmt.Printf("setting default port 8080\n")
+		prt = "8080"
+	}
+	fmt.Println("running port ", prt, "\n")
 
 	flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
 	flag.Parse()
 	r := mux.NewRouter()
 
 	// This will serve files under http://localhost:8000/static/<filename>
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
+	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(dir))))
 
 	srv := &http.Server{
 		Handler: r,
