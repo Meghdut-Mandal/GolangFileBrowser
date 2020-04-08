@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -11,8 +12,16 @@ import (
 	"time"
 )
 
+type IpAddress struct {
+	ip string `json:"ip"`
+}
+
 func main() {
 	var dir string
+	resp, _ := http.Get("https://api.ipify.org?format=json")
+	body, _ := ioutil.ReadAll(resp.Body)
+	//var address IpAddress
+	fmt.Println("ip now " + string(body))
 
 	prt := os.Getenv("PRT")
 	if _, err := strconv.Atoi(prt); err == nil {
@@ -32,7 +41,7 @@ func main() {
 
 	srv := &http.Server{
 		Handler: r,
-		Addr:    "127.0.0.1:" + prt,
+		Addr:    ":" + prt,
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
